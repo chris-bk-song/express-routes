@@ -16,35 +16,24 @@ const users = [
   },
 ];
 
-// Hello World
-app.get('/', function (req, res) {
-  res.send(`
-  <!DOCTYPE>
-  <html>
-  <head>
-    <title>Express Routes</title>
-  </head>
-  <body>
-    <h1>Hello, World!</h1>
-    <p>Add '/greet/(one of the names listed below)' to the end of your URL to receive greeting message.</p>
-    <ol><b>List of Names</b>
-      <li>Kennedy</li>
-      <li>Jamison</li>
-      <li>Manny</li>
-    </ol>
-    <p>Add '/year?age=(your age in digits)' to the end of your URL to display the year you were born.</p> 
-    <button><a href="http://localhost:3000/cats">Meow</a></button>
-    <br>
-    <button><a href="http://localhost:3000/dogs">Woof</a></button>
-    <br>
-    <button><a href="http://localhost:3000/cats_and_dogs">Living together</a></button>
-  </body>
-  </html>
-  `)
-});
+console.log(app)
+
+app.use(express.static('public'));
+
+function urlLogger(req, res, next) {
+  console.log('Request Logged: ', req.originalUrl);
+  next();
+};
+
+// logging method (log everything)
+app.use(urlLogger); 
+
+// route specific logging method (log specified routes only)
+// app.use('/greet/*', urlLogger);
+
 
 // Routes
-app.get('/cats', function (req, res) {
+app.get('/cats', function (req, res, next) {
   res.send(`
   <!DOCTYPE>
   <html>
@@ -59,7 +48,7 @@ app.get('/cats', function (req, res) {
   `)
 });
 
-app.get('/dogs', function (req, res) {
+app.get('/dogs', function (req, res, next) {
   res.send(`
   <!DOCTYPE>
   <html>
@@ -90,7 +79,7 @@ app.get('/cats_and_dogs', function (req, res) {
 });
 
 // Route Parameters
-app.get('/greet/:name', function (req, res) {
+app.get('/greet/:name', function (req, res, next) {
   const user = users.find((currentUser) => {
     return currentUser.name === req.params.name;
   });
@@ -103,8 +92,9 @@ app.get('/greet/:name', function (req, res) {
   `)
 });
 
+
 // Query Parameters: Tell the year you were born
-app.get('/year', function(req, res) {
+app.get('/year', function(req, res, next) {
   var age = req.query.age;
   var year = 2020 - age;
   res.send('You were born in year ' + year + '.');
